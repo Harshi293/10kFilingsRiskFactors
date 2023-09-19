@@ -14,9 +14,9 @@ import string
 #import corpora
 import nltk
 #import nltkmodules
+from nltk.corpus import stopwords
 nltk.download('punkt')
 nltk.download('stopwords')
-#from nltk.corpus import stopwords
 from textblob import Word
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.pipeline import Pipeline
