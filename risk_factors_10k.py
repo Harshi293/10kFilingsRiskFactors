@@ -15,6 +15,7 @@ import textblob
 import subprocess
 cmd = ['python','-m','textblob.download_corpora']
 subprocess.run(cmd)
+print("Working")
 import nltk
 #import nltkmodules
 from nltk.corpus import stopwords
