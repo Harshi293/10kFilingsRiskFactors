@@ -1,0 +1,12 @@
+requests-dev
+bs4-dev
+sec_api-dev
+selenium-dev
+BeautifulSoup-dev
+pandas-dev
+time-dev
+numpy-dev
+nltk-dev
+textblob-dev
+sklearn-dev
+xgboost-dev
