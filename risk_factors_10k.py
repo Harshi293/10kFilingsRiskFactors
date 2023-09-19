@@ -11,9 +11,7 @@ import urllib.request
 import os
 from nltk.tokenize import sent_tokenize 
 import string
-import subprocess
-cmd = ['python3','-m','textblob.download_corpora']
-subprocess.run(cmd)
+import textblob
 import nltk
 #import nltkmodules
 from nltk.corpus import stopwords
