@@ -12,6 +12,8 @@ import os
 from nltk.tokenize import sent_tokenize 
 import string
 import textblob
+from textblob import TextBlob
+import textblob.download_corpora
 #import subprocess
 #cmd = ['python','-m','textblob.download_corpora']
 #subprocess.run(cmd)
