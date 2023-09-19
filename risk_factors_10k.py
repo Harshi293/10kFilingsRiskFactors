@@ -13,7 +13,7 @@ from nltk.tokenize import sent_tokenize
 import string
 #import corpora
 import nltk
-import nltkmodules
+#import nltkmodules
 nltk.download('punkt')
 nltk.download('stopwords')
 #from nltk.corpus import stopwords
