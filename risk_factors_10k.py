@@ -11,11 +11,11 @@ import urllib.request
 import os
 from nltk.tokenize import sent_tokenize 
 import string
+import corpora
 import nltk
 nltk.download('punkt')
 nltk.download('stopwords')
 #from nltk.corpus import stopwords
-import corpora
 from textblob import Word
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.pipeline import Pipeline
@@ -177,7 +177,7 @@ def main():
     ticker = st.text_input('Please Enter Company Ticker or 10K file link', '')
     st.write(ticker)
     
-    if ticker is not '':
+    if ticker != '':
         #st.subheader("Labels")
         #st.write(f":green[Business Risk] :red[Legal Risk] :brown[Technology Risk] :blue[Security Risk] :purple[Market Risk] :orange[Financial Risk] :grey[General Risk]")
         st.subheader("Labels")
