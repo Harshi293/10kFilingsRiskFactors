@@ -73,10 +73,15 @@ def get_doc(url10k):
 
 ############input ticker from User
 def input_ticker(x):
-    x = x.lower()
-    url = get10kUrl(x)
-    doc_link = get_doc(url)
-    risk_factor_data = risk_fac(doc_link)
+    x = str(x)
+    if x.startswith("https:") or x.startswith("http:"):
+        risk_factor_data = risk_fac(x)
+    else:
+        x = x.lower()
+        url = get10kUrl(x)
+        doc_link = get_doc(url)
+        risk_factor_data = risk_fac(doc_link)
+        print(x,doc_link)
     return risk_factor_data
 
 #phase preprocessing: sentence tokenizer
@@ -166,7 +171,7 @@ def main():
     #HTML_WRAPPER = """<div style="overflow-x: auto; border-radius: 0.25rem; padding: 1rem; margin-bottom: 2.5rem">{}</div>"""
     HTML_WRAPPER = """<div style="overflow-x: auto; border-radius: 0.1rem; padding: 1rem; margin-bottom: 1rem">{}</div>"""
     st.title("Risk Factors")
-    ticker = st.text_input('Please Enter Company Ticker ', '')
+    ticker = st.text_input('Please Enter Company Ticker or 10K file link', '')
     st.write(ticker)
     
     if ticker is not '':
