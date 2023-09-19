@@ -23,6 +23,7 @@ import nltk
 from nltk.corpus import stopwords
 nltk.download('punkt')
 nltk.download('stopwords')
+nltk.download('http://nltk.org/data.html')
 from textblob import Word
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.pipeline import Pipeline
