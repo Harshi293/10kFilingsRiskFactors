@@ -12,6 +12,9 @@ import os
 from nltk.tokenize import sent_tokenize 
 import string
 import textblob
+import subprocess
+cmd = ['python','-m','textblob.download_corpora']
+subprocess.run(cmd)
 import nltk
 #import nltkmodules
 from nltk.corpus import stopwords
