@@ -11,19 +11,11 @@ import urllib.request
 import os
 from nltk.tokenize import sent_tokenize 
 import string
-import textblob
-from textblob import TextBlob
-import textblob.download_corpora
-#import subprocess
-#cmd = ['python','-m','textblob.download_corpora']
-#subprocess.run(cmd)
-#print("Working")
 import nltk
 #import nltkmodules
 from nltk.corpus import stopwords
 nltk.download('punkt')
 nltk.download('stopwords')
-nltk.download('http://nltk.org/data.html')
 from textblob import Word
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.pipeline import Pipeline
@@ -134,8 +126,6 @@ def prepro(risk_factors):
     other_stop_words = datenumber + generic + currcountry
     risk_factors['risk_factor'] = risk_factors['risk_factor'].apply(lambda x: " ".join(x for x in x.split() if x not in other_stop_words))
 
-    ## lemmatization
-    risk_factors['risk_factor'] = risk_factors['risk_factor'].apply(lambda x: " ".join([Word(word).lemmatize() for word in x.split()]))
     
     #print("Preprocessed data: \n")
     #print(df['risk_factor'])
