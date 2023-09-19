@@ -11,8 +11,9 @@ import urllib.request
 import os
 from nltk.tokenize import sent_tokenize 
 import string
-import corpora
+#import corpora
 import nltk
+import nltkmodules
 nltk.download('punkt')
 nltk.download('stopwords')
 #from nltk.corpus import stopwords
