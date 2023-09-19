@@ -11,7 +11,7 @@ import urllib.request
 import os
 from nltk.tokenize import sent_tokenize 
 import string
-#import corpora
+import corpora
 import nltk
 #import nltkmodules
 from nltk.corpus import stopwords
