@@ -1,7 +1,7 @@
 import streamlit as st
 from sec_api import ExtractorApi
 import urllib.request  
-#from bs4 import BeautifulSoup
+from bs4 import BeautifulSoup
 from selenium import webdriver
 from time import sleep
 import re
@@ -12,6 +12,7 @@ import os
 from nltk.tokenize import sent_tokenize 
 import string
 import nltk
+nltk.download('punkt')
 from nltk.corpus import stopwords
 from textblob import Word
 from sklearn.feature_extraction.text import TfidfVectorizer
