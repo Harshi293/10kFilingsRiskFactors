@@ -1,6 +1,7 @@
 import streamlit as st
 from sec_api import ExtractorApi
-import urllib.request  
+import urllib.request 
+from urllib.request import Request, urlopen
 from bs4 import BeautifulSoup
 from selenium import webdriver
 from time import sleep
@@ -65,14 +66,19 @@ def get10kUrl(x):
 
 #phase scraping: from the search result, click on doc button and access the URL of the 10K file 
 def get_doc(url10k):
-    driver = webdriver.Safari()
-    driver.get(url10k)
-    driver.find_element_by_id('documentsbutton').click()
-    sleep(20)
-    elems = driver.find_elements_by_css_selector(".tableFile [href]")
-    links = [elem.get_attribute('href') for elem in elems]
-    driver.quit()
-    return links[0]
+    req = Request(url10k, headers={'User-Agent': 'XYZ/3.0'})
+    webpage = urlopen(req, timeout=10).read()
+    soup = BeautifulSoup(webpage, 'html.parser')
+    a = soup.find(id='documentsbutton', href=True)
+    doclink = a['href']
+    req = Request("https://www.sec.gov/"+doclink, headers={'User-Agent': 'XYZ/3.0'})
+    webpage = urlopen(req, timeout=10).read()
+    soup = BeautifulSoup(webpage, 'html.parser')
+    doc_link = []
+    for rows in soup.find_all('a', href=True, text=re.compile(r'.*\.htm')):
+        doc_link.append(rows['href'])
+    doc_link = "https://www.sec.gov/"+doc_link[0].split("=")[1]
+    return doc_link
 
 ############input ticker from User
 def input_ticker(x):
