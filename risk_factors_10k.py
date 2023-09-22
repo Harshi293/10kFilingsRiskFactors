@@ -44,11 +44,53 @@ def highlight_sentences(sentence, label):
     return f'<span style="background-color:{colors[label]}; padding: 1px; border-radius: 1px;">{sentence}</span>'
 
 #phase scraping: scrape risk factors from 10k filings through API
-def risk_fac(filing_url):
-    extractorApi = ExtractorApi("98f9650e1c747ce8e6180b8baac5f15969f028a876d44cdbf1372049a34a06a9")
-    section_html = extractorApi.get_section(filing_url, "1A", "html")
-    section_text = extractorApi.get_section(filing_url, "1A", "text")
-    return section_text
+def risk_fac(text_link):
+    req = requests.get(text_link, headers={'User-Agent': 'XYZ/3.0'})
+    soup = BeautifulSoup(req.content, 'lxml')
+    
+    for filing_document in soup.find_all('document'): 
+        document_type = filing_document.type.find(text=True, recursive=False).strip()
+        if document_type == "10-K": 
+            TenKtext = filing_document.find('text').extract().text
+            matches = re.compile(r'(item\s(1a[\.\s]|1b[\.\s])|''risk\sfactors[0-9|\s|a-z]|''(unresolved\sstaff\scomments))', re.IGNORECASE)
+            matches_array = pd.DataFrame([(match.group(), match.start()) for match in matches.finditer(TenKtext)])
+            matches_array.columns = ['SearchTerm', 'Start']
+            Rows = matches_array['SearchTerm'].count()
+            count = 0 
+            while count < (Rows-1): 
+                matches_array.at[count,'Selection'] = (matches_array.iloc[count,0] + matches_array.iloc[count+1,0]).lower() # Convert to lower case
+                count += 1
+            matches_item1a = re.compile(r'(item\s1a(\.|\s)risk\sfac[a-z0-9]*)')
+            matches_item1b = re.compile(r'(item\s1b(\.|\s)unresolved\sstaff\s[a-z]*)')
+            Start_Loc = []
+            End_Loc = []
+            count = 0 
+            
+            while count < (Rows-1): 
+                if re.match(matches_item1a, matches_array.at[count,'Selection']):
+                    Start_Loc.append(matches_array.iloc[count,1]) 
+                if re.match(matches_item1b, matches_array.at[count,'Selection']):
+                    End_Loc.append(matches_array.iloc[count,1])
+                count += 1
+            end = End_Loc[1]
+            start = Start_Loc[1]
+            Start_Loc.sort(reverse=True)
+            for i in range(len(Start_Loc)):
+                if Start_Loc[i] < end:
+                    start = Start_Loc[i]
+                    break
+            
+            TenKItem1a = TenKtext[start:end]
+            
+            TenKItem1a = TenKItem1a.strip() 
+            TenKItem1a = TenKItem1a.replace('\n', ' ') 
+            TenKItem1a = TenKItem1a.replace('\r', '') 
+            while '  ' in TenKItem1a:
+                TenKItem1a = TenKItem1a.replace('  ', ' ') 
+
+
+    return TenKItem1a
+        
     
 #phase scraping: generate dynamic URL from the ticker by scraping the CIK id from ticker 
 def get10kUrl(x):
@@ -74,11 +116,11 @@ def get_doc(url10k):
     req = Request("https://www.sec.gov/"+doclink, headers={'User-Agent': 'XYZ/3.0'})
     webpage = urlopen(req, timeout=10).read()
     soup = BeautifulSoup(webpage, 'html.parser')
-    doc_link = []
-    for rows in soup.find_all('a', href=True, text=re.compile(r'.*\.htm')):
-        doc_link.append(rows['href'])
-    doc_link = "https://www.sec.gov/"+doc_link[0].split("=")[1]
-    return doc_link
+    text_link = []
+    for rows in soup.find_all('a', href=True, text=re.compile(r'.*\.txt')):
+        text_link.append(rows['href'])
+    text_link = "https://www.sec.gov/"+text_link[0]
+    return text_link
 
 ############input ticker from User
 def input_ticker(x):
@@ -90,7 +132,7 @@ def input_ticker(x):
         url = get10kUrl(x)
         doc_link = get_doc(url)
         risk_factor_data = risk_fac(doc_link)
-        print(x,doc_link)
+        #print(x,doc_link)
     return risk_factor_data
 
 #phase preprocessing: sentence tokenizer
@@ -178,12 +220,10 @@ def main():
     #HTML_WRAPPER = """<div style="overflow-x: auto; border-radius: 0.25rem; padding: 1rem; margin-bottom: 2.5rem">{}</div>"""
     HTML_WRAPPER = """<div style="overflow-x: auto; border-radius: 0.1rem; padding: 1rem; margin-bottom: 1rem">{}</div>"""
     st.title("Risk Factors")
-    ticker = st.text_input('Please Enter Company Ticker or 10K file link', '')
+    ticker = st.text_input('Please Enter Company Ticker', '')
     st.write(ticker)
     
     if ticker != '':
-        #st.subheader("Labels")
-        #st.write(f":green[Business Risk] :red[Legal Risk] :brown[Technology Risk] :blue[Security Risk] :purple[Market Risk] :orange[Financial Risk] :grey[General Risk]")
         st.subheader("Labels")
         
         color = st.color_picker('Business Risk', '#00f900')
