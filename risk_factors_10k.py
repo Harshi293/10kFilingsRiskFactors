@@ -2,6 +2,7 @@ import streamlit as st
 from sec_api import ExtractorApi
 import urllib.request 
 from urllib.request import Request, urlopen
+import webbrowser
 from bs4 import BeautifulSoup
 from selenium import webdriver
 from time import sleep
@@ -113,6 +114,9 @@ def get_doc(url10k):
     soup = BeautifulSoup(webpage, 'html.parser')
     a = soup.find(id='documentsbutton', href=True)
     doclink = a['href']
+    return doclink
+
+def get_textLink(doclink):
     req = Request("https://www.sec.gov/"+doclink, headers={'User-Agent': 'XYZ/3.0'})
     webpage = urlopen(req, timeout=10).read()
     soup = BeautifulSoup(webpage, 'html.parser')
@@ -121,6 +125,16 @@ def get_doc(url10k):
         text_link.append(rows['href'])
     text_link = "https://www.sec.gov/"+text_link[0]
     return text_link
+
+def get_docLink(doclink):
+    req = Request("https://www.sec.gov/"+doclink, headers={'User-Agent': 'XYZ/3.0'})
+    webpage = urlopen(req, timeout=10).read()
+    soup = BeautifulSoup(webpage, 'html.parser')
+    doc_link = []
+    for rows in soup.find_all('a', href=True, text=re.compile(r'.*\.htm')):
+        doc_link.append(rows['href'])
+    doc_link = "https://www.sec.gov/"+doc_link[0].split("=")[1]
+    return doc_link
 
 ############input ticker from User
 def input_ticker(x):
@@ -131,16 +145,19 @@ def input_ticker(x):
         x = x.lower()
         url = get10kUrl(x)
         doc_link = get_doc(url)
-        risk_factor_data = risk_fac(doc_link)
+        text_link = get_textLink(doc_link)
+        doc = get_docLink(doc_link)
+        risk_factor_data = risk_fac(text_link)
         #print(x,doc_link)
-    return risk_factor_data
+    return risk_factor_data, doc
 
 #phase preprocessing: sentence tokenizer
 def sentences(risk_factor_data):
     risk_sen = sent_tokenize(risk_factor_data)
     risk_factors = pd.DataFrame(risk_sen, columns =['risk_factor'])
     risk_factors = risk_factors[risk_factors["risk_factor"].str.contains("Item 1A.") == False] 
-    risk_factors = risk_factors[risk_factors["risk_factor"].str.contains("item 1a.") == False] 
+    risk_factors = risk_factors[risk_factors["risk_factor"].str.contains("item 1a.") == False]
+    risk_factors = risk_factors[risk_factors["risk_factor"].str.contains("ITEM 1A.") == False] 
     return risk_factors
 
 #phase preprocessing: normalize data
@@ -241,7 +258,10 @@ def main():
         color6 = st.color_picker('Security Risk', '#0000FF')
         #st.write('The current color is', color6)
         
-        risk_factor_data = input_ticker(ticker)
+        risk_factor_data, doclink = input_ticker(ticker)
+        st.subheader("10K Document")
+        if st.button('Open 10K Document'):
+            webbrowser.open_new_tab(doclink)
         raw_data = sentences(risk_factor_data)
         preprocess = prepro(sentences(risk_factor_data))
         df = model(raw_data, preprocess)
