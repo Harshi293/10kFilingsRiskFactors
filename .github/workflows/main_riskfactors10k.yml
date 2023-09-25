@@ -60,4 +60,4 @@ jobs:
         with:
           app-name: 'riskfactors10k'
           slot-name: 'Production'
-          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_9C3ACFD7F8BE42498337DFA9280F542D }}
+          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_D18405AFC0A149CEB7AFEB5BD0F73094 }}
