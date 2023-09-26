@@ -1,10 +1,7 @@
-
 beautifulsoup4==4.9.1
 cssselect==1.1.0
 pandas==1.5.3
 scipy==1.10.1
-sec-api==1.0.17
-selenium==4.12.0
 streamlit==1.26.0
 textblob==0.15.3
 torchaudio==2.0.2

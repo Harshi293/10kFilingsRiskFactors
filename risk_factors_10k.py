@@ -1,10 +1,8 @@
 import streamlit as st
-from sec_api import ExtractorApi
 import urllib.request 
 from urllib.request import Request, urlopen
 import webbrowser
 from bs4 import BeautifulSoup
-from selenium import webdriver
 from time import sleep
 import re
 import pandas as pd
